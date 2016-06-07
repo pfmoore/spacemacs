@@ -14,7 +14,7 @@
 (defvar spacemacs--diminished-minor-modes nil
   "List of diminished modes to unicode or ascii values.")
 
-(defun spacemacs/set-default-font (plists)
+(defun spacemacs/set-default-font (plists &optional frame)
   "Set the font given the passed PLISTS.
 
 PLISTS has either the form (\"fontname\" :prop1 val1 :prop2 val2 ...)
@@ -25,7 +25,9 @@ The return value is nil if no font was found, truthy otherwise."
     (setq plists (list plists)))
   (catch 'break
     (dolist (plist plists)
-      (when (find-font (font-spec :name (car plist)))
+      (message "Trying %S on %S" plist frame)
+      (when (find-font (font-spec :name (car plist)) frame)
+        (message "Found font %S" plist)
         (let* ((font (car plist))
                (props (cdr plist))
                (scale (plist-get props :powerline-scale))
@@ -34,8 +36,8 @@ The return value is nil if no font was found, truthy otherwise."
                             :powerline-offset))
                (fontspec (apply 'font-spec :name font font-props)))
           (spacemacs-buffer/message "Setting font \"%s\"..." font)
-          (set-frame-font fontspec nil t)
-          (push `(font . ,(frame-parameter nil 'font)) default-frame-alist)
+          (set-frame-font font frame t)
+          (push (cons 'font (frame-parameter frame 'font)) default-frame-alist)
           (setq-default powerline-scale scale)
           (setq-default powerline-height (spacemacs/compute-powerline-height))
           ;; fallback font for unicode characters used in spacemacs
@@ -70,16 +72,16 @@ The return value is nil if no font was found, truthy otherwise."
                                           fallback-props)))
               ;; window numbers
               (set-fontset-font "fontset-default"
-                                '(#x2776 . #x2793) fallback-spec nil 'prepend)
+                                '(#x2776 . #x2793) fallback-spec frame 'prepend)
               ;; mode-line circled letters
               (set-fontset-font "fontset-default"
-                                '(#x24b6 . #x24fe) fallback-spec nil 'prepend)
+                                '(#x24b6 . #x24fe) fallback-spec frame 'prepend)
               ;; mode-line additional characters
               (set-fontset-font "fontset-default"
-                                '(#x2295 . #x22a1) fallback-spec nil 'prepend)
+                                '(#x2295 . #x22a1) fallback-spec frame 'prepend)
               ;; new version lighter
               (set-fontset-font "fontset-default"
-                                '(#x2190 . #x2200) fallback-spec2 nil 'prepend))))
+                                '(#x2190 . #x2200) fallback-spec2 frame 'prepend))))
         (throw 'break t)))
     nil))
 

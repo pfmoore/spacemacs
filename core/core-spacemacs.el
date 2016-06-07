@@ -58,6 +58,15 @@
   "Whether or not spacemacs has finished initializing by completing
 the final step of executing code in `emacs-startup-hook'.")
 
+(defun spacemacs/set-font (frame)
+  (unless (spacemacs/set-default-font dotspacemacs-default-font frame)
+    (spacemacs-buffer/warning
+     "Cannot find any of the specified fonts (%s)! Font settings may not be correct."
+     (if (listp (car dotspacemacs-default-font))
+         (mapconcat 'car dotspacemacs-default-font ", ")
+       (car dotspacemacs-default-font))))
+  (remove-hook 'after-make-frame-functions #'spacemacs/set-font))
+
 (defun spacemacs/init ()
   "Perform startup initialization."
   (when spacemacs-debugp (spacemacs/init-debug))
@@ -95,21 +104,22 @@ the final step of executing code in `emacs-startup-hook'.")
     (setq-default spacemacs--cur-theme default-theme)
     (setq-default spacemacs--cycle-themes (cdr dotspacemacs-themes)))
   ;; font
-  (spacemacs|do-after-display-system-init
-   ;; If you are thinking to remove this call to `message', think twice. You'll
-   ;; break the life of several Spacemacser using Emacs in daemon mode. Without
-   ;; this, their chosen font will not be set on the *first* instance of
-   ;; emacsclient, at least if different than their system font. You don't
-   ;; believe me? Go ahead, try it. After you'll have notice that this was true,
-   ;; increase the counter bellow so next people will give it more confidence.
-   ;; Counter = 1
-   (message "Setting the font...")
-   (unless (spacemacs/set-default-font dotspacemacs-default-font)
-     (spacemacs-buffer/warning
-      "Cannot find any of the specified fonts (%s)! Font settings may not be correct."
-      (if (listp (car dotspacemacs-default-font))
-          (mapconcat 'car dotspacemacs-default-font ", ")
-        (car dotspacemacs-default-font)))))
+  (add-hook 'after-make-frame-functions #'spacemacs/set-font)
+  ;(spacemacs|do-after-display-system-init
+  ; ;; If you are thinking to remove this call to `message', think twice. You'll
+  ; ;; break the life of several Spacemacser using Emacs in daemon mode. Without
+  ; ;; this, their chosen font will not be set on the *first* instance of
+  ; ;; emacsclient, at least if different than their system font. You don't
+  ; ;; believe me? Go ahead, try it. After you'll have notice that this was true,
+  ; ;; increase the counter bellow so next people will give it more confidence.
+  ; ;; Counter = 1
+  ; (message "Setting the font...")
+  ; (unless (spacemacs/set-default-font dotspacemacs-default-font)
+  ;   (spacemacs-buffer/warning
+  ;    "Cannot find any of the specified fonts (%s)! Font settings may not be correct."
+  ;    (if (listp (car dotspacemacs-default-font))
+  ;        (mapconcat 'car dotspacemacs-default-font ", ")
+  ;      (car dotspacemacs-default-font)))))
   ;; spacemacs init
   (setq inhibit-startup-screen t)
   (spacemacs-buffer/goto-buffer)
