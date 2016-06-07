@@ -36,7 +36,7 @@ The return value is nil if no font was found, truthy otherwise."
                             :powerline-offset))
                (fontspec (apply 'font-spec :name font font-props)))
           (spacemacs-buffer/message "Setting font \"%s\"..." font)
-          (set-frame-font font frame t)
+          (set-frame-font (find-font fontspec) frame t)
           (push (cons 'font (frame-parameter frame 'font)) default-frame-alist)
           (setq-default powerline-scale scale)
           (setq-default powerline-height (spacemacs/compute-powerline-height))
@@ -72,16 +72,16 @@ The return value is nil if no font was found, truthy otherwise."
                                           fallback-props)))
               ;; window numbers
               (set-fontset-font "fontset-default"
-                                '(#x2776 . #x2793) fallback-spec frame 'prepend)
+                                '(#x2776 . #x2793) fallback-spec nil 'prepend)
               ;; mode-line circled letters
               (set-fontset-font "fontset-default"
-                                '(#x24b6 . #x24fe) fallback-spec frame 'prepend)
+                                '(#x24b6 . #x24fe) fallback-spec nil 'prepend)
               ;; mode-line additional characters
               (set-fontset-font "fontset-default"
-                                '(#x2295 . #x22a1) fallback-spec frame 'prepend)
+                                '(#x2295 . #x22a1) fallback-spec nil 'prepend)
               ;; new version lighter
               (set-fontset-font "fontset-default"
-                                '(#x2190 . #x2200) fallback-spec2 frame 'prepend))))
+                                '(#x2190 . #x2200) fallback-spec2 nil 'prepend))))
         (throw 'break t)))
     nil))
 
