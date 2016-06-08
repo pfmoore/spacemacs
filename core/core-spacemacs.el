@@ -64,7 +64,8 @@ the final step of executing code in `emacs-startup-hook'.")
 ;;    Error during redisplay: (eval (spaceline-ml-main)) signaled
 ;;          (wrong-type-argument hash-table-p nil
 ;;    <t> is undefined
-(defun spacemacs/set-font ()
+(defun spacemacs/set-font (frame)
+  (select-frame frame)
   (when (font-family-list)
     (unless (spacemacs/set-default-font dotspacemacs-default-font)
       (spacemacs-buffer/warning
@@ -72,7 +73,7 @@ the final step of executing code in `emacs-startup-hook'.")
        (if (listp (car dotspacemacs-default-font))
            (mapconcat 'car dotspacemacs-default-font ", ")
          (car dotspacemacs-default-font))))
-    (remove-hook 'focus-in-hook #'spacemacs/set-font)))
+    (remove-hook 'after-make-frame-functions #'spacemacs/set-font)))
 
 (defun spacemacs/init ()
   "Perform startup initialization."
@@ -111,7 +112,7 @@ the final step of executing code in `emacs-startup-hook'.")
     (setq-default spacemacs--cur-theme default-theme)
     (setq-default spacemacs--cycle-themes (cdr dotspacemacs-themes)))
   ;; font
-  (add-hook 'focus-in-hook #'spacemacs/set-font)
+  (add-hook 'after-make-frame-functions #'spacemacs/set-font)
   ;(spacemacs|do-after-display-system-init
   ; ;; If you are thinking to remove this call to `message', think twice. You'll
   ; ;; break the life of several Spacemacser using Emacs in daemon mode. Without
